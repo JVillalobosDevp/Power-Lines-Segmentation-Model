@@ -55,6 +55,40 @@ def prepare():
     return configs
 
 
+# Data Join in one txt file
+def onefile(carpeta_origen, archivo_salida):
+    # Crear o vaciar el archivo de salida
+    with open(archivo_salida, 'w') as f_salida:
+       # pass  # Simplemente se abre en modo 'w' para vaciar el contenido si existe
+
+        # Procesar cada archivo en la carpeta de origen
+        for archivo in os.listdir(carpeta_origen):
+            if archivo.endswith(".txt"):
+                ruta_archivo = os.path.join(carpeta_origen, archivo)
+            
+                with open(ruta_archivo, 'r') as f_entrada:
+                    for linea in f_entrada:
+                        columnas = linea.split()
+                    
+                        # Formatear la cuarta columna a seis decimales
+                        cuarto_valor = float(columnas[3])
+                        cuarto_formateado = f"{cuarto_valor:.6f}"
+                    
+                        # Asignar valores RGB según el valor en la cuarta columna
+                        if cuarto_valor == 0:
+                            rgb = "0 255 0"
+                        elif cuarto_valor == 1:
+                            rgb = "0 0 255"
+                        else:
+                            rgb = "255 0 0"
+                    
+                        # Crear la línea de salida y escribirla en el archivo
+                        linea_salida = f"{columnas[0]} {columnas[1]} {columnas[2]} {rgb} {cuarto_formateado}\n"
+                        f_salida.write(linea_salida)
+
+    print(f"Todos los archivos se han procesado y combinado en {archivo_salida}")
+
+
 def evaluate(configs=None):
     configs = prepare() if configs is None else configs
 
@@ -86,9 +120,9 @@ def evaluate(configs=None):
 
     #if os.path.exists(configs.evaluate.stats_path):
     #    stats = np.load(configs.evaluate.stats_path)
-     #   print('clssIoU: {}'.format('  '.join(map('{:>8.2f}'.format, stats[:, 0] / stats[:, 1] * 100))))
-     #   print('meanIoU: {:4.2f}'.format(stats[:, 0].sum() / stats[:, 1].sum() * 100))
-     #   return
+    #    print('clssIoU: {}'.format('  '.join(map('{:>8.2f}'.format, stats[:, 0] / stats[:, 1] * 100))))
+    #    print('meanIoU: {:4.2f}'.format(stats[:, 0].sum() / stats[:, 1].sum() * 100))
+    #    return
 
     #################################
     # Initialize DataLoaders, Model #
@@ -172,8 +206,16 @@ def evaluate(configs=None):
         os.makedirs(segmented_output_dir, exist_ok=True)
         output_file = os.path.join(segmented_output_dir, f"segmented_output_shape_{shape_index}.txt")
         output_data = np.hstack((data[:, :3], predictions.reshape(-1, 1)))
-        np.savetxt(output_file, output_data, fmt="%.6f %.6f %.6f %d", delimiter=" ")
+        np.savetxt(output_file, output_data, fmt="%.6f %.6f %.6f %.6f", delimiter=" ")
         print(f"Resultados guardados en {output_file}")
+
+    # Ruta de la carpeta que contiene los archivos originales
+    carpeta_origen = "./runs/shapenet.pvcnn.c0p5/segmented_outputs"
+
+    # Ruta del archivo de salida combinado
+    archivo_salida = "../segmented_file/segmented_file.txt"
+
+    onefile(carpeta_origen, archivo_salida)
 
     np.save(configs.evaluate.stats_path, stats)
     print('clssIoU: {}'.format('  '.join(map('{:>8.2f}'.format, stats[:, 0] / stats[:, 1] * 100))))
