@@ -26,7 +26,7 @@ The following libraries were used in this project
 
 We adapt the data from point clouds in order to be readable for the model using shapenet configurations.
 
-One can run [utils/process_las](utils/process_las.py) to read read data from las files and split it into parts to improve speed and reduce the load on the gpu when uploading the data to be classified
+If desired, you can run [utils/process_las](utils/process_las.py) to read data from las files and split it into parts to improve speed and reduce the load on the gpu when uploading the data to be classified
 
 These data must then be added to the folder where the data is read [04460130](data/shapenet/shapenetcore_partanno_segmentation_benchmark_v0_normal/04460130).
 
