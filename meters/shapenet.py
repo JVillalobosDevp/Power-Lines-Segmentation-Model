@@ -4,15 +4,15 @@ __all__ = ['MeterShapeNet']
 
 
 default_shape_name_to_part_classes = {
-    'Tower': [0, 1, 2, 3],
-    'Bag': [4, 5],
-    'Cap': [6, 7],
-    'Car': [8, 9, 10, 11],
+    'Ground': [0],
+    'Vegetation': [1],
+    'Buildings': [2],
+    'TL': [3,4],
 }
 
 
 class MeterShapeNet:
-    def __init__(self, num_classes=50, num_shapes=16, shape_name_to_part_classes=None):
+    def __init__(self, num_classes=5, num_shapes=4, shape_name_to_part_classes=None):
         super().__init__()
         self.num_classes = num_classes
         self.num_shapes = num_shapes
