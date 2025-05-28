@@ -8,7 +8,7 @@ __all__ = ['ShapeNet']
 
 
 class _ShapeNetDataset(Dataset):
-    def __init__(self, root, num_points, split='train', with_normal=True, with_one_hot_shape_id=True,
+    def __init__(self, root, num_points, split='train', with_normal=True, with_one_hot_shape_id=False,
                  normalize=True, jitter=True):
         assert split in ['train', 'test']
         self.root = root
@@ -42,7 +42,7 @@ class _ShapeNetDataset(Dataset):
         self.file_paths = file_paths
         print(f"Total archivos leídos para el split '{self.split}': {len(self.file_paths)}")
         self.num_shapes = 4
-        self.num_classes = 12
+        self.num_classes = 5
 
         self.cache = {}  # from index to (point_set, cls, seg) tuple
         self.cache_size = 20000
@@ -56,7 +56,7 @@ class _ShapeNetDataset(Dataset):
             coords = data[:, :3]
             if self.normalize:
                 coords = self.normalize_point_cloud(coords)
-            normal = data[:, 3:6]
+            normal = data[:, 3:5]
             label = data[:, -1].astype(np.int64)
             if len(self.cache) < self.cache_size:
                 self.cache[index] = (coords, normal, label, shape_id)
