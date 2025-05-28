@@ -23,11 +23,15 @@ def onefile(carpeta_origen, archivo_salida):
                     
                         # Asignar valores RGB según el valor en la cuarta columna
                         if cuarto_valor == 0:
-                            rgb = "0 255 0"
+                            rgb = "128 128 0"
                         elif cuarto_valor == 1:
-                            rgb = "0 0 255"
-                        else:
+                            rgb = "0 128 0"
+                        elif cuarto_valor == 2:
                             rgb = "255 0 0"
+                        elif cuarto_valor == 3:
+                            rgb = "255 255 0"
+                        else:
+                            rgb = "128 128 128"
                     
                         # Crear la línea de salida y escribirla en el archivo
                         linea_salida = f"{columnas[0]} {columnas[1]} {columnas[2]} {rgb} {cuarto_formateado}\n"
@@ -70,12 +74,16 @@ def txt_a_las(input_txt, output_las):
    
     # Definir condiciones y valores correspondientes
     condiciones = [
-        (puntos[:, 6] == 1),  
-        (puntos[:, 6] == 0)   
+        (puntos[:, 6] == 0),
+        (puntos[:, 6] == 1),
+        (puntos[:, 6] == 2),  
+        (puntos[:, 6] == 3)   
     ]
     valores = [
-        14,  
-        1    
+        1,  
+        4,
+        6,
+        14    
     ]
     
     default_value = 30
@@ -107,4 +115,4 @@ def filter(input_las):
 
 input_las = output_las
 
-filter(input_las)
+#filter(input_las)

@@ -1,4 +1,4 @@
-Bag	02773838
-Cap	02954340
-Car	02958343
-Tower 04460130
+GND	Ground
+VG	Vegetation
+BD	Buildings
+TL TL
