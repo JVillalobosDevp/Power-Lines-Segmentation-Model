@@ -18,33 +18,33 @@ def generar_datos_y_dividir():
 
     # Generar TL (186 files)
     base = bases["TL"]  # Base correspondiente
-    rutas = generar_rutas(base, "TL", range(186))
+    rutas = generar_rutas(base, "TL", range(30))
     # Seleccionar 20% (30 datos) y el resto
-    seleccionados = random.sample(rutas, 36)
+    seleccionados = random.sample(rutas, 3)
     rutas_submuestreadas.extend(seleccionados)
     rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
 
     # Generar VG (131 files)
     base = bases["VG"]  # Base correspondiente
-    rutas = generar_rutas(base, "VG", range(132))
+    rutas = generar_rutas(base, "VG", range(74))
     # Seleccionar 20% (30 datos) y el resto
-    seleccionados = random.sample(rutas, 26)
+    seleccionados = random.sample(rutas, 7)
     rutas_submuestreadas.extend(seleccionados)
     rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
 
     # Generar GND (371 files)
     base = bases["GND"]  # Base correspondiente
-    rutas = generar_rutas(base, "GND", range(372))
+    rutas = generar_rutas(base, "GND", range(75))
     # Seleccionar 20% (100 datos) y el resto
-    seleccionados = random.sample(rutas, 74)
+    seleccionados = random.sample(rutas, 8)
     rutas_submuestreadas.extend(seleccionados)
     rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
 
     # Generar BD (295 files)
     base = bases["BD"]  # Base correspondiente
-    rutas = generar_rutas(base, "BD", range(296))
+    rutas = generar_rutas(base, "BD", range(19))
     # Seleccionar 20% (100 datos) y el resto
-    seleccionados = random.sample(rutas, 59)
+    seleccionados = random.sample(rutas, 2)
     rutas_submuestreadas.extend(seleccionados)
     rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
 
@@ -61,8 +61,8 @@ def guardar_json(rutas, archivo_salida):
 
 # Ejecutar el script
 if __name__ == "__main__":
-    archivo_original = "rutas_originales.json"
-    archivo_submuestreo = "rutas_submuestreadas.json"
+    archivo_original = "shuffled_train_file_listt.json"
+    archivo_submuestreo = "shuffled_val_file_list.json"
 
     rutas_originales, rutas_submuestreadas = generar_datos_y_dividir()
     guardar_json(rutas_originales, archivo_original)
