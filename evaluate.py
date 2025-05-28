@@ -12,10 +12,10 @@ def prepare():
     # since PyTorch jams device selection, we have to parse args before import torch (issue #26790)
     parser = argparse.ArgumentParser()
     parser.add_argument('configs', nargs='*', default=['configs/shapenet/pvcnn/c0p5.py'])
-    parser.add_argument('--evaluate', default=True, action='store_true')
+    parser.add_argument('--evaluate', default=False, action='store_true')
     args, opts = parser.parse_known_args()
     if torch.cuda.is_available():
-        gpus = set_cuda_visible_devices("0,1")  # Aquí puedes listar todas las GPUs, por ejemplo "0,1" para dos GPUs.
+        gpus = set_cuda_visible_devices("0")
         if len(gpus) == 0:
             configs.device = 'cuda'  # Usar 'cuda' si hay GPUs disponibles
             configs.device_ids = gpus
@@ -79,7 +79,28 @@ def prepare():
         configs.evaluate.stats_path = configs.evaluate.best_checkpoint_path.replace('.pth.tar', '.eval.npy')
 
     return configs
+    
+    class EarlyStopper:
+    def __init__(self, patience=3, min_delta=1e-4):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.counter = 0
+        self.best_score = None
 
+    def early_stop(self, current_score):
+        if self.best_score is None:
+            self.best_score = current_score
+            return False
+        elif current_score > self.best_score + self.min_delta:
+            self.best_score = current_score
+            self.counter = 0
+        else:
+            self.counter += 1
+            if self.counter >= self.patience:
+                return True
+        return False
+
+early_stopper = EarlyStopper(patience=5, min_delta=1e-4)
 
 def main():
     configs = prepare()
@@ -250,6 +271,12 @@ def main():
             for k, meter in meters.items():
                 print(f'[{k}] = {meter:2f}')
                 writer.add_scalar(k, meter, current_step)
+
+            val_score = meters.get('acc/iou_test')
+            if val_score is not None:
+                if early_stopper.early_stop(val_score):
+                    print(f"Early stopping at epoch {current_epoch}")
+                    break
 
             # save checkpoint
             torch.save({
