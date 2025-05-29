@@ -34,6 +34,7 @@ class MeterShapeNet:
     def update(self, outputs: torch.Tensor, targets: torch.Tensor):
         # outputs: B x num_classes x num_points, targets: B x num_points
         for b in range(outputs.size(0)):
+            #print("target", b)
             start_class, end_class = self.part_class_to_shape_part_classes[targets[b, 0].item()]
             prediction = torch.argmax(outputs[b, start_class:end_class, :], dim=0) + start_class
             target = targets[b, :]
@@ -52,4 +53,6 @@ class MeterShapeNet:
             self.shape_count += 1
 
     def compute(self):
+        print("iou sum:", self.iou_sum)
+        print("Shape count:", self.shape_count)
         return self.iou_sum / self.shape_count

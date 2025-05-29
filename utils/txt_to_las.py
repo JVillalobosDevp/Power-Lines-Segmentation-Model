@@ -49,6 +49,9 @@ archivo_salida = "../segmented_file/segmented_file.txt"
 def txt_a_las(input_txt, output_las):
     # Cargar los datos del archivo .txt
     puntos = np.loadtxt(input_txt, delimiter=' ')  # Cambia el delimitador si es necesario
+
+    #Ignore Class # 2
+    puntos = puntos[puntos[:, 6] != 2]
     
     # Crear un header para el archivo .LAS
     header = laspy.LasHeader(point_format=8, version="1.4")
@@ -75,36 +78,39 @@ def txt_a_las(input_txt, output_las):
     # Definir condiciones y valores correspondientes
     condiciones = [
         (puntos[:, 6] == 0),
-        (puntos[:, 6] == 1),
-        (puntos[:, 6] == 2),  
-        (puntos[:, 6] == 3)   
+        (puntos[:, 6] == 1), 
+        (puntos[:, 6] == 2),                   
+        (puntos[:, 6] == 3), 
+        (puntos[:, 6] == 4)   
     ]
     valores = [
-        1,  
-        4,
-        6,
-        14    
+        0,  
+        1,
+        2,
+        3,
+        3
     ]
     
-    default_value = 30
+    default_value = 0
     # Asignar clasificación aplicando las condiciones
     las.classification = np.select(condiciones, valores, default=default_value).astype(np.uint8)    # mapped to standar classification
 
+    las.user_data = puntos[:, 7]
     # Guardar el archivo como .LAS o .LAZ
     las.write(output_las)
     print(f"Archivo convertido y guardado en: {output_las}")
 
 
 # Ejemplo de uso:
-input_txt = "../segmented_file/segmented_file.txt"  # Ruta al archivo .txt
-output_las = "../segmented_file/segmented_file.las"  # Ruta de salida para el archivo .LAS
+input_txt = "./segmented_file/segmented_file.txt"  # Ruta al archivo .txt
+output_las = "./segmented_file/segmented_file.las"  # Ruta de salida para el archivo .LAS
 
 txt_a_las(input_txt, output_las)
 
 def filter(input_las):
     las = laspy.read(input_las)
 
-    umbral_altura = 2000.0
+    umbral_altura = 2100.0
 
     new_file = laspy.create(point_format=las.header.point_format, file_version=las.header.version)
     new_file.points = las.points[(las.z > umbral_altura) & (las.classification == 14)]

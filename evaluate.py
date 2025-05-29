@@ -14,14 +14,11 @@ def prepare():
     parser.add_argument('configs', nargs='*', default=['configs/shapenet/pvcnn/c0p5.py'])
     parser.add_argument('--evaluate', default=False, action='store_true')
     args, opts = parser.parse_known_args()
+    gpu = set_cuda_visible_devices("0")
     if torch.cuda.is_available():
         gpus = set_cuda_visible_devices("0")
-        if len(gpus) == 0:
-            configs.device = 'cuda'  # Usar 'cuda' si hay GPUs disponibles
-            configs.device_ids = gpus
-        else:
-            configs.device = 'cuda'
-            configs.device_ids = [0]  # Usa solo la primera GPU si no se configuran más.
+        configs.device = 'cuda'
+        configs.device_ids = gpus  # Usa solo la primera GPU si no se configuran más.
     else:
         configs.device = 'cpu'
         configs.device_ids = []   
@@ -33,12 +30,12 @@ def prepare():
 
     # override configs with args
     configs.update_from_arguments(*opts)
-    if len(gpus) == 0:
+    if len(gpu) == 0:
         configs.device = 'cpu'
         configs.device_ids = []
     else:
         configs.device = 'cuda'
-        configs.device_ids = gpus
+        configs.device_ids = gpu
     if args.evaluate and configs.evaluate.fn is not None:
         if 'dataset' in configs.evaluate:
             for k, v in configs.evaluate.dataset.items():

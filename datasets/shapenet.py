@@ -30,15 +30,14 @@ class _ShapeNetDataset(Dataset):
         else:
             split = ['test']
         for s in split:
-            with open(os.path.join(self.root, 'train_test_split', f'shuffled_{s}_file_list.json'), 'r') as f:
+             with open(os.path.join(self.root, 'train_test_split', f'shuffled_{s}_file_list.json'), 'r') as f:
                 file_list = json.load(f)
                 for file_path in file_list:
                     _, shape_dir, filename = file_path.split('/')
-                    if shape_dir in shape_dir_to_shape_id:   #Ensure to only consider valid folders
-                        file_paths.append(
+                    file_paths.append(
                         (os.path.join(self.root, shape_dir, filename + '.txt'),
-                        shape_dir_to_shape_id[shape_dir])
-                        )
+                         shape_dir_to_shape_id[shape_dir])
+                    )
         self.file_paths = file_paths
         print(f"Total archivos leídos para el split '{self.split}': {len(self.file_paths)}")
         self.num_shapes = 4

@@ -2,25 +2,51 @@ import laspy
 import os
 import numpy as np
 
-# Cargar el archivo .las
-input_file = "./37AZ1_20.las"  # Coloca aquí la ruta de tu archivo
-output_file = "./archivo_filtrado.las"  # Ruta para el nuevo archivo filtrado
 
-# Abrir archivo .las
-las = laspy.read(input_file)
+def div_n_remap(input_file, outdir):
+    # Abrir archivo .las
+    las = laspy.read(input_file)
 
-# Filtrar puntos por altura (modifica el umbral según tus necesidades)
-# Por ejemplo, elimina puntos con altura (z) menor a un cierto valor
-umbral_altura = 2.0  # Ajusta este valor según el terreno y características de tus datos
-filtered_points = las.points[las.z > umbral_altura]
+    # Crear un nuevo archivo .las con los puntos filtrados
+    header = las.header  # Obtener el encabezado original
 
-# Crear un nuevo archivo .las con los puntos filtrados
-header = las.header  # Obtener el encabezado original
-filtered_las = laspy.create(point_format=las.point_format, file_version=las.header.version)
-filtered_las.points = filtered_points  # Guardar los puntos filtrados
-filtered_las.write(output_file)
+    os.makedirs(outdir, exist_ok=True)
 
-print("Archivo filtrado guardado exitosamente en:", output_file)
+    #Classes of interest in pointcloud:
+    classes = {
+        "Ground": 0,
+        "Vegetation": 1, 
+        "Wire+Tower": 3,
+        "Tower": 4,   
+    }
+
+    for cls in classes:
+        new_file = laspy.create(point_format=header.point_format, file_version=header.version)
+        new_file.points = las.points[las.classification == classes[cls]]
+        new_file.header.offsets = header.offsets  
+        new_file.header.scales = header.scales
+        new_file.write(f'preprocessed_clss/class_{classes[cls]}.las')
+        print("extraída la clase:", cls)
+
+
+
+    #Remap classes in model values
+    format = {
+        "0": 0,  
+        "1": 1,   
+        "3": 3, 
+    }
+
+    for num in format:
+        remap = laspy.read(f'{outdir}/class_{num}.las')
+        remap.classification[:] = format[num] 
+        remap.write(f'{outdir}/class_{format[num]}.las')
+    
+    #os.remove(f'{outdir}/class_6.las')
+    #os.remove(f'{outdir}/class_2.las')
+    #os.remove(f'{outdir}/class_1.las')    
+    #os.remove(f'{outdir}/class_0.las')
+   
 
 def dividir_nube_las(input_file, output_dir, num_partes):
     # Abrir el archivo LAS para obtener la cantidad de puntos y el header original
@@ -28,6 +54,9 @@ def dividir_nube_las(input_file, output_dir, num_partes):
     total_puntos = archivo_las.header.point_count
     header_original = archivo_las.header  # Guardar el header original
     
+    #Crea carpeta de salida
+    os.makedirs(output_dir, exist_ok=True)
+    print("Se leyó el folder: ", output_dir)
     # Calcular cuántos puntos por parte
     puntos_por_parte = total_puntos // num_partes
 
@@ -54,43 +83,88 @@ def dividir_nube_las(input_file, output_dir, num_partes):
         archivo_las_dividido.write(output_file)
         print(f"Parte {i + 1} guardada en {output_file}")
 
-def las_a_txt(input_dir, output_dir):
-    # Obtener lista de archivos LAS en el directorio de entrada
-    archivos_las = [f for f in os.listdir(input_dir) if f.endswith(".las")]
+def las_a_txt(input_dir, output_dir, data):
 
+    contador = 0
+
+    for file in os.listdir(input_dir):
+        filename = os.fsdecode(file)
+        if filename.endswith(".las") or filename.endswith(".laz"): 
+            # Procesar cada archivo LAS
+            input_path = os.path.join(input_dir, file)
+            # Leer el archivo LAS
+            inFile = laspy.read(input_path)
+            test = np.vstack((inFile.x, inFile.y, inFile.z, inFile.red, inFile.blue, inFile.green, inFile.classification)).T
+
+            with open(f"{output_dir}/{data}f_{contador:06d}.txt", mode='w') as f:
+                for i in range(len(test)):
+                    f.write("%.6f "%float(test[i][0].item()))
+                    f.write("%.6f "%float(test[i][1].item()))
+                    f.write("%.6f "%float(test[i][2].item()))
+                    f.write("%d "%int(test[i][3].item()))
+                    f.write("%d "%int(test[i][4].item()))
+                    f.write("%d "%int(test[i][5].item()))                
+                    f.write("%.6f \n"%int(test[i][6].item()))
+        
+            print(f"Guardado archivo: {output_dir}/{data}f_{contador:06d}.txt")
+            contador += 1  # Incrementar el contador para el siguiente archivo
+        continue
     # Inicializar contador para los nombres de los archivos
-    contador = 1
 
-    # Procesar cada archivo LAS
-    for archivo in archivos_las:
-        input_path = os.path.join(input_dir, archivo)
 
-        # Leer el archivo LAS
-        with laspy.open(input_path) as archivo_las:
-            points = archivo_las.read().points
-            coords = np.vstack((points.X, points.Y, points.Z)).T
-            rgb = np.vstack((points.red, points.green, points.blue)).T
-            escalar = points.user_data  # Suponiendo que el escalar está en 'user_data'
 
-        # Combinar las columnas XYZ, RGB y el escalar
-        datos_combinados = np.hstack((coords, rgb, escalar.reshape(-1, 1)))
 
-        # Formatear el nombre del archivo en "CC_000001.txt" y continuar el conteo
-        output_file = os.path.join(output_dir, f"CC_{contador:06d}.txt")
-        np.savetxt(output_file, datos_combinados, fmt="%.6f %.6f %.6f %d %d %d %.6f", delimiter=" ")
 
-        print(f"Guardado archivo: {output_file}")
-        contador += 1  # Incrementar el contador para el siguiente archivo
+#### Class div and remap  ####
 
-# Divisiones de archivo las:
-input_file = "./archivo_filtrado.las"
-output_dir = "./nube_separada/"
+# Cargar el archivo .las
+
+input_file = "aligned_test_cloud.las" 
+outdir = "preprocessed_clss/"
+
+#div_n_remap(input_file, outdir)
+
+#### Divisiones de archivo las  ####
+
+partsdir = "./preprocessed_clss"
+    
+for file in os.listdir(partsdir):
+    filename = os.fsdecode(file)
+    if filename.endswith(".las") or filename.endswith(".laz"): 
+        input_file = os.path.join(partsdir, file)
+        print("Procesing file: ", file)
+        class_name = os.path.splitext(file)[0]
+        output_dir = os.path.join("./outdir", class_name)
+        num_partes = 500
+#        dividir_nube_las(input_file, output_dir, num_partes)
+        continue
+
+
+#### Individual division   #### 
+
+input_file = "preprocessed_clss/class_0.las"
+output_dir = "outdir/class_0"
 num_partes = 1000
 
-dividir_nube_las(input_file, output_dir, num_partes)
+dividir_nube_las(input_file, output_dir, num_partes) 
 
-# :
-input_dir = "./nube_separada/"  # Directorio donde están los archivos .las
-output_dir = "./nube_en_txt/"  # Directorio de salida para los archivos .txt
 
-las_a_txt(input_dir, output_dir)
+
+#### Las to txt ####
+names = {
+    "Ground": 0,
+#    "Vegetation": 1,
+#    "TL": 3,
+}
+
+data = [
+    "GD",
+#    "VG", 
+#    "TL",  
+]
+i=0
+for n in names:
+    input_dir = f'outdir/class_{names[n]}'  # Directorio donde están los archivos .las
+    output_dir = f'/home/binahlab/AI-Labs/clever-data/electrical-elements/data/nederland/geotiles-2025_05_08/processed/pointclouds/{n}'  
+    las_a_txt(input_dir, output_dir, data[i])
+    i=i+1
