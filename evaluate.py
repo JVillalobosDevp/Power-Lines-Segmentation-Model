@@ -78,7 +78,7 @@ def prepare():
     return configs
     
 class EarlyStopper:
-    def __init__(self, patience=3, min_delta=1e-4):
+    def __init__(self, patience=10, min_delta=1e-6):
         self.patience = patience
         self.min_delta = min_delta
         self.counter = 0

@@ -21,34 +21,34 @@ bases = {
 # Generar los datos y dividir entre los dos archivos
 def generar_datos_y_dividir():
     rutas_originales = []
-    #rutas_submuestreadas = []
+    rutas_submuestreadas = []
 
     # Generar TL (186 files)
     base = bases["TL"]  # Base correspondiente
-    rutas = generar_rutas(base, "TLf", range(500))
+    rutas = generar_rutas(base, "TL", range(29))
     # Seleccionar 20% (30 datos) y el resto
-    #seleccionados = random.sample(rutas, 1)
-    #rutas_submuestreadas.extend(seleccionados)
-    #rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
+    seleccionados = random.sample(rutas, 6)
+    rutas_submuestreadas.extend(seleccionados)
+    rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
     rutas_originales.extend(rutas)
 
     # Generar VG (131 files)
     base = bases["VG"]  # Base correspondiente
-    rutas = generar_rutas(base, "VGf", range(500))
+    rutas = generar_rutas(base, "VG", range(71))
     # Seleccionar 20% (30 datos) y el resto
-    #seleccionados = random.sample(rutas, 1)
-    #rutas_submuestreadas.extend(seleccionados)
-    #rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
+    seleccionados = random.sample(rutas, 14)
+    rutas_submuestreadas.extend(seleccionados)
+    rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
     rutas_originales.extend(rutas)    
 
     # Generar GND (371 files)
-    base = bases["GND"]  # Base correspondiente
-    rutas = generar_rutas(base, "GDf", range(1000))
+    #base = bases["GND"]  # Base correspondiente
+    #rutas = generar_rutas(base, "GDf", range(1000))
     # Seleccionar 20% (100 datos) y el resto
     #seleccionados = random.sample(rutas, 1)
     #rutas_submuestreadas.extend(seleccionados)
     #rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
-    rutas_originales.extend(rutas)
+    #rutas_originales.extend(rutas)
 
     # Generar BD (295 files)
  #    base = bases["BD"]  # Base correspondiente
@@ -61,12 +61,12 @@ def generar_datos_y_dividir():
 
     # Mezclar aleatoriamente las rutas ""
     random.shuffle(rutas_originales)
-    #random.shuffle(rutas_submuestreadas)
+    random.shuffle(rutas_submuestreadas)
 
-    #return rutas_originales, rutas_submuestreadas
+    return rutas_originales, rutas_submuestreadas
 
     #Only Test
-    return rutas_originales
+    #return rutas_originales
 
 # Guardar JSON
 def guardar_json(rutas, archivo_salida):
@@ -75,16 +75,16 @@ def guardar_json(rutas, archivo_salida):
 
 # Ejecutar el script
 if __name__ == "__main__":
-    archivo_original = "/home/binahlab/AI-Labs/clever-data/electrical-elements/data/nederland/geotiles-2025_05_08/processed/pointclouds/train_test_split/shuffled_test_file_list.json"
-    archivo_submuestreo = "rutas_submuestreadas.json"
+    archivo_original = "/home/binahlab/AI-Labs/clever-data/electrical-elements/data/nederland/geotiles-2025_05_08/processed/pointclouds/train_test_split/shuffled_train_file_list.json"
+    archivo_submuestreo = "/home/binahlab/AI-Labs/clever-data/electrical-elements/data/nederland/geotiles-2025_05_08/processed/pointclouds/train_test_split/shuffled_val_file_list.json"
 
-    #rutas_originales, rutas_submuestreadas = generar_datos_y_dividir()
+    rutas_originales, rutas_submuestreadas = generar_datos_y_dividir()
 
     #Only test
-    rutas_originales = generar_datos_y_dividir()
+    #rutas_originales = generar_datos_y_dividir()
 
     guardar_json(rutas_originales, archivo_original)
-    #guardar_json(rutas_submuestreadas, archivo_submuestreo)
+    guardar_json(rutas_submuestreadas, archivo_submuestreo)
 
     print(f"Archivo JSON original generado con {len(rutas_originales)} rutas en '{archivo_original}'.")
     #print(f"Archivo JSON submuestreado generado con {len(rutas_submuestreadas)} rutas en '{archivo_submuestreo}'.")

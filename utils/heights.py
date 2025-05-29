@@ -36,11 +36,11 @@ def no_ground_features_extraction(
 
 
     las = laspy.read(input_file)
-    points = las.points[las.classification != 1]
+    points = las.points[las.classification != 0]
     no_ground_points = np.vstack((points.x, points.y, points.z)).T
     logger.debug(f"Loaded {no_ground_points.shape[0]} points from file: {input_file}")
 
-    points = las.points[las.classification == 1]
+    points = las.points[las.classification == 0]
     ground_points = np.vstack((points.x, points.y, points.z)).T
     logger.debug(f"Loaded {ground_points.shape[0]} points from file: {input_file}")
 
@@ -95,19 +95,26 @@ def no_ground_features_extraction(
     ground_heights = downsampled_ground_points[nearest_indices, 2]
     relative_heights = downsampled_no_ground_points[:, 2] - ground_heights
 
-    if "relative_height" not in las.point_format.dimension_names:
-        extra_dim = laspy.ExtraBytesParams(name="relative_height", type=np.float32)
-        las.add_extra_dim(extra_dim)
-    
-    las.points = las.points[las.classification != 1].copy()
+    header = las.header  # Obtener el encabezado original
 
-    relative_height_array = np.full(len(las.points[las.classification != 1]), np.nan, dtype=np.float32)
+    ground_las = laspy.create(point_format=header.point_format, file_version=header.version)
+    ground_las.points = las.points[las.classification == 0]
+    ground_las.header.offsets = header.offsets  
+    ground_las.header.scales = header.scales
 
-    points = las.points
-    relative_height_array[points] = relative_heights
-    las['relative_height'] = relative_height_array
 
-    las.write(output_file)
+    ground_las.add_extra_dim(laspy.ExtraBytesParams(
+        name="height",
+        type=np.float64,
+        description="Precise height values"
+    ))
+
+    # Set your height data
+    las["height"] = np.vstack(ground_heights).T  
+
+    # Save to new LAS file
+    ground_las.write(f'preprocessed_clss/class_0.las')
+
 
     logger.debug("📏 Computed relative heights to nearest ground")
 
