@@ -6,11 +6,13 @@ import laspy
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 def no_ground_features_extraction(
     input_file,
+    no_ground_file,
     k_neighbors=30,
-    no_ground_voxel_size=0.5,
+    no_ground_voxel_size=0,
     ground_voxel_size=0
 ):
     """
@@ -35,13 +37,12 @@ def no_ground_features_extraction(
     logger.info("Starting feature extraction: normals, curvature, and relative height")
 
 
-    las = laspy.read(input_file)
-    points = las.points[las.classification != 0]
-    no_ground_points = np.vstack((points.x, points.y, points.z)).T
-    logger.debug(f"Loaded {no_ground_points.shape[0]} points from file: {input_file}")
+    las = laspy.read(no_ground_file)
+    no_ground_points = np.vstack((las.x, las.y, las.z)).T
+    logger.debug(f"Loaded {no_ground_points.shape[0]} points from file: {no_ground_file}")
 
-    points = las.points[las.classification == 0]
-    ground_points = np.vstack((points.x, points.y, points.z)).T
+    ground = laspy.read(input_file)
+    ground_points = np.vstack((ground.x, ground.y, ground.z)).T
     logger.debug(f"Loaded {ground_points.shape[0]} points from file: {input_file}")
 
     no_ground_points = np.asarray(no_ground_points, dtype=np.float64)
@@ -98,7 +99,7 @@ def no_ground_features_extraction(
     header = las.header  # Obtener el encabezado original
 
     ground_las = laspy.create(point_format=header.point_format, file_version=header.version)
-    ground_las.points = las.points[las.classification == 0]
+    ground_las.points = las.points
     ground_las.header.offsets = header.offsets  
     ground_las.header.scales = header.scales
 
@@ -110,10 +111,10 @@ def no_ground_features_extraction(
     ))
 
     # Set your height data
-    las["height"] = np.vstack(ground_heights).T  
+    ground_las["height"] = np.vstack(relative_heights).T
 
     # Save to new LAS file
-    ground_las.write(f'preprocessed_clss/class_0.las')
+    ground_las.write("preprocessed_clss/class_3_height.las")
 
 
     logger.debug("📏 Computed relative heights to nearest ground")
@@ -123,12 +124,13 @@ def no_ground_features_extraction(
 
     return relative_heights, downsampled_no_ground_points
 
-input_file = "VUELO_8_EDM.las"
-output_file = "InH_Fly.las"
+input_file = "preprocessed_clss/class_0.las"
+no_ground_file= "preprocessed_clss/class_3.las"
  
 no_ground_features_extraction(
     input_file,
+    no_ground_file,
     k_neighbors=30,
-    no_ground_voxel_size=0.5,
+    no_ground_voxel_size=0,
     ground_voxel_size=0
 )

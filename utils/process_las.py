@@ -119,10 +119,10 @@ def las_a_txt(input_dir, output_dir, data):
 
 # Cargar el archivo .las
 
-input_file = "aligned_test_cloud.las" 
+input_file = "nether_int.las" 
 outdir = "preprocessed_clss/"
 
-#div_n_remap(input_file, outdir)
+div_n_remap(input_file, outdir)
 
 #### Divisiones de archivo las  ####
 
@@ -146,7 +146,7 @@ input_file = "preprocessed_clss/class_0.las"
 output_dir = "outdir/class_0"
 num_partes = 1000
 
-dividir_nube_las(input_file, output_dir, num_partes) 
+#dividir_nube_las(input_file, output_dir, num_partes) 
 
 
 
@@ -166,5 +166,5 @@ i=0
 for n in names:
     input_dir = f'outdir/class_{names[n]}'  # Directorio donde están los archivos .las
     output_dir = f'/home/binahlab/AI-Labs/clever-data/electrical-elements/data/nederland/geotiles-2025_05_08/processed/pointclouds/{n}'  
-    las_a_txt(input_dir, output_dir, data[i])
+    #las_a_txt(input_dir, output_dir, data[i])
     i=i+1

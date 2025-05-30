@@ -53,9 +53,12 @@ class _ShapeNetDataset(Dataset):
             file_path, shape_id = self.file_paths[index]
             data = np.loadtxt(file_path).astype(np.float32)
             coords = data[:, :3]
+            intensity = data[:, 3]
+            height = data[:, 4]
             if self.normalize:
                 coords = self.normalize_point_cloud(coords)
-            normal = data[:, 3]
+                intensity = self.normalize_intensity(intensity)
+            normal = np.stack([intensity, height], axis=1)
             label = data[:, -1].astype(np.int64)
             if len(self.cache) < self.cache_size:
                 self.cache[index] = (coords, normal, label, shape_id)
@@ -88,12 +91,15 @@ class _ShapeNetDataset(Dataset):
     def normalize_point_cloud(points):
         coords = points[:, :3]           
         intensity = points[:, 3]         
-        
         # Normalize coordinates
         centroid = np.mean(coords, axis=0)
         coords -= centroid                      # Center the cloud
         coords /= np.max(np.linalg.norm(coords, axis=1))  # Scale to unit sphere
 
+        return coords
+    
+    @staticmethod
+    def normalize_intensity(intensity):
         # Normalize intensity using IQR (robust to outliers)
         IQR = np.quantile(intensity, 0.75) - np.quantile(intensity, 0.25)
         if IQR == 0:
@@ -103,8 +109,7 @@ class _ShapeNetDataset(Dataset):
         norm_intensity -= np.min(norm_intensity)  # Shift to make min = 0
 
         # Reconstruct normalized point cloud
-        normalized_points = np.concatenate([coords, norm_intensity[:, np.newaxis]], axis=1)
-        return normalized_points
+        return intensity
 
     @staticmethod
     def jitter_point_cloud(points, sigma=0.01, clip=0.05):
