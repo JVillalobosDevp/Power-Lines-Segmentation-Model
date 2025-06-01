@@ -89,8 +89,7 @@ class _ShapeNetDataset(Dataset):
 
     @staticmethod
     def normalize_point_cloud(points):
-        coords = points[:, :3]           
-        intensity = points[:, 3]         
+        coords = points[:, :3]                  
         # Normalize coordinates
         centroid = np.mean(coords, axis=0)
         coords -= centroid                      # Center the cloud
@@ -108,7 +107,6 @@ class _ShapeNetDataset(Dataset):
             norm_intensity = (intensity - np.median(intensity)) / IQR
         norm_intensity -= np.min(norm_intensity)  # Shift to make min = 0
 
-        # Reconstruct normalized point cloud
         return intensity
 
     @staticmethod

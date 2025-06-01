@@ -4,9 +4,7 @@ import open3d as o3d
 from scipy.spatial import KDTree
 import laspy
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 def no_ground_features_extraction(
     input_file,
@@ -98,23 +96,23 @@ def no_ground_features_extraction(
 
     header = las.header  # Obtener el encabezado original
 
-    ground_las = laspy.create(point_format=header.point_format, file_version=header.version)
-    ground_las.points = las.points
-    ground_las.header.offsets = header.offsets  
-    ground_las.header.scales = header.scales
+    no_ground_las = laspy.create(point_format=header.point_format, file_version=header.version)
+    no_ground_las.points = las.points
+    no_ground_las.header.offsets = header.offsets  
+    no_ground_las.header.scales = header.scales
 
 
-    ground_las.add_extra_dim(laspy.ExtraBytesParams(
+    no_ground_las.add_extra_dim(laspy.ExtraBytesParams(
         name="height",
         type=np.float64,
         description="Precise height values"
     ))
 
     # Set your height data
-    ground_las["height"] = np.vstack(relative_heights).T
+    no_ground_las["height"] = np.vstack(relative_heights).T
 
     # Save to new LAS file
-    ground_las.write("preprocessed_clss/class_3_height.las")
+    no_ground_las.write(no_ground_file)
 
 
     logger.debug("📏 Computed relative heights to nearest ground")
@@ -124,7 +122,7 @@ def no_ground_features_extraction(
 
     return relative_heights, downsampled_no_ground_points
 
-input_file = "preprocessed_clss/class_0.las"
+""" input_file = "preprocessed_clss/class_0.las"
 no_ground_file= "preprocessed_clss/class_3.las"
  
 no_ground_features_extraction(
@@ -133,4 +131,4 @@ no_ground_features_extraction(
     k_neighbors=30,
     no_ground_voxel_size=0,
     ground_voxel_size=0
-)
+) """
