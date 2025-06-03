@@ -1,7 +1,7 @@
 import json
 import random
 def generar_rutas(base_path, prefijo, rango):
-    return [f"{base_path}/{prefijo}_{i:06d}" for i in rango]
+    return [f"{base_path}/{prefijo}net_{i:06d}" for i in rango]
 
 # Asociar categorías con bases específicas
 bases = {
@@ -16,37 +16,37 @@ def generar_datos_y_dividir():
     rutas_originales = []
     rutas_submuestreadas = []
 
-    # Generar TL (186 files)
+    # Generar TL 
     base = bases["TL"]  # Base correspondiente
-    rutas = generar_rutas(base, "TL", range(30))
+    rutas = generar_rutas(base, "TL", range(49))
     # Seleccionar 20% (30 datos) y el resto
-    seleccionados = random.sample(rutas, 3)
+    seleccionados = random.sample(rutas, 5)
     rutas_submuestreadas.extend(seleccionados)
     rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
 
-    # Generar VG (131 files)
-    base = bases["VG"]  # Base correspondiente
-    rutas = generar_rutas(base, "VG", range(74))
+    # Generar VG 
+#    base = bases["VG"]  # Base correspondiente
+#    rutas = generar_rutas(base, "VG", range(100))
     # Seleccionar 20% (30 datos) y el resto
-    seleccionados = random.sample(rutas, 7)
-    rutas_submuestreadas.extend(seleccionados)
-    rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
+#    seleccionados = random.sample(rutas, 10)
+#    rutas_submuestreadas.extend(seleccionados)
+#    rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
 
-    # Generar GND (371 files)
-    base = bases["GND"]  # Base correspondiente
-    rutas = generar_rutas(base, "GND", range(75))
+    # Generar GND 
+#    base = bases["GND"]  # Base correspondiente
+#    rutas = generar_rutas(base, "GND", range(75))
     # Seleccionar 20% (100 datos) y el resto
-    seleccionados = random.sample(rutas, 8)
-    rutas_submuestreadas.extend(seleccionados)
-    rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
+#    seleccionados = random.sample(rutas, 8)
+#    rutas_submuestreadas.extend(seleccionados)
+#    rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
 
-    # Generar BD (295 files)
-    base = bases["BD"]  # Base correspondiente
-    rutas = generar_rutas(base, "BD", range(19))
+    # Generar BD 
+#    base = bases["BD"]  # Base correspondiente
+#    rutas = generar_rutas(base, "BD", range(19))
     # Seleccionar 20% (100 datos) y el resto
-    seleccionados = random.sample(rutas, 2)
-    rutas_submuestreadas.extend(seleccionados)
-    rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
+#    seleccionados = random.sample(rutas, 2)
+#    rutas_submuestreadas.extend(seleccionados)
+#    rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
 
     # Mezclar aleatoriamente las rutas
     random.shuffle(rutas_originales)
@@ -61,8 +61,8 @@ def guardar_json(rutas, archivo_salida):
 
 # Ejecutar el script
 if __name__ == "__main__":
-    archivo_original = "shuffled_train_file_listt.json"
-    archivo_submuestreo = "shuffled_val_file_list.json"
+    archivo_original = "shuffled_train_file_list.json"
+    archivo_submuestreo = "shuffled_test_file_list.json"
 
     rutas_originales, rutas_submuestreadas = generar_datos_y_dividir()
     guardar_json(rutas_originales, archivo_original)

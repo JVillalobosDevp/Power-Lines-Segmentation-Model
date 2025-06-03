@@ -1,7 +1,7 @@
 import laspy
 import numpy as np
 
-inputFile = "preprocessed_clss/class_1.las"
+inputFile = "preprocessed_clss/class_3.las"
 outFolder = "preprocessed_clss"
 inFile = laspy.read(inputFile)
 #print(list(inFile.point_format.dimension_names))

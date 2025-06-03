@@ -52,7 +52,7 @@ def div_n_remap(input_file, outdir):
     
     #os.remove(f'{outdir}/class_6.las')
     #os.remove(f'{outdir}/class_2.las')
-    #os.remove(f'{outdir}/class_1.las')    
+    os.remove(f'{outdir}/class_1.las')    
     #os.remove(f'{outdir}/class_4.las')
 
 
@@ -115,7 +115,7 @@ def las_a_txt(input_dir, output_dir, data):
             inFile = laspy.read(input_path)
             test = np.vstack((inFile.x, inFile.y, inFile.z, inFile.intensity, inFile.height, inFile.classification)).T
 
-            with open(f"{output_dir}/{data}f_{contador:06d}.txt", mode='w') as f:
+            with open(f"{output_dir}/{data}net_{contador:06d}.txt", mode='w') as f:
                 for i in range(len(test)):
                     f.write("%.6f "%float(test[i][0].item()))
                     f.write("%.6f "%float(test[i][1].item()))
@@ -124,7 +124,7 @@ def las_a_txt(input_dir, output_dir, data):
                     f.write("%.6f "%float(test[i][4].item()))
                     f.write("%.6f \n"%int(test[i][5].item()))
         
-            print(f"Guardado archivo: {output_dir}/{data}f_{contador:06d}.txt")
+            print(f"Guardado archivo: {output_dir}/{data}net_{contador:06d}.txt")
             contador += 1  # Incrementar el contador para el siguiente archivo
         continue
     
@@ -137,14 +137,14 @@ def las_a_txt(input_dir, output_dir, data):
 input_file = "normalized_cloud.las" 
 outdir = "preprocessed_clss/"
 
-#div_n_remap(input_file, outdir)
+div_n_remap(input_file, outdir)
 
 #### Heights extraction ####
 
-""" input_file = "preprocessed_clss/class_0.las"
+input_file = "preprocessed_clss/class_0.las"
 
 data = [
-    1,
+#    1,
     3, 
 #    "TL",  
 ]
@@ -158,8 +158,10 @@ for num in data:
         k_neighbors=30,
         no_ground_voxel_size=0,
         ground_voxel_size=0
-    ) """
-   
+    )
+
+os.remove('preprocessed_clss/class_0.las')
+
 #### Divisiones de archivo las  ####
 
 partsdir = "./preprocessed_clss"
@@ -188,13 +190,13 @@ num_partes = 1000
 #### Las to txt ####
 names = {
 #    "Ground": 0,
-    "Vegetation": 1,
+#    "Vegetation": 1,
     "TL": 3,
 }
 
 data = [
 #    "GD",
-    "VG", 
+#    "VG", 
     "TL",  
 ]
 i=0
@@ -203,3 +205,6 @@ for n in names:
     output_dir = f'/home/binahlab/AI-Labs/clever-data/electrical-elements/data/nederland/geotiles-2025_05_08/processed/pointclouds/{n}'  
     las_a_txt(input_dir, output_dir, data[i])
     i=i+1
+
+#os.remove('outdir/class_1')
+os.remove('outdir/class_3')
