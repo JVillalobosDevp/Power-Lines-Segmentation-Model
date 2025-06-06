@@ -1,5 +1,5 @@
 import laspy
-import os, logging 
+import os, logging, shutil 
 import numpy as np
 from heights import no_ground_features_extraction
 import math
@@ -9,23 +9,19 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-
-
 def div_n_remap(input_file, outdir):
-    # Abrir archivo .las
     las = laspy.read(input_file)
 
-    # Crear un nuevo archivo .las con los puntos filtrados
     header = las.header  # Obtener el encabezado original
 
     os.makedirs(outdir, exist_ok=True)
 
     #Classes of interest in pointcloud:
     classes = {
-        "Ground": 0,
-        "Vegetation": 1, 
-        "Wire+Tower": 3,
-        #"Tower": 4,   
+        "Ground": 1,
+        "Vegetation": 2, 
+        #"Tower": 2, 
+        "TL": 14,   
     }
 
     for cls in classes:
@@ -38,11 +34,11 @@ def div_n_remap(input_file, outdir):
 
 
 
-    #Remap classes in model values
+    ### Remap classes in model values
     format = {
-        "0": 0,  
+        "2": 0,  
         "1": 1,   
-        "3": 3, 
+        "14": 3, 
     }
 
     for num in format:
@@ -50,26 +46,25 @@ def div_n_remap(input_file, outdir):
         remap.classification[:] = format[num] 
         remap.write(f'{outdir}/class_{format[num]}.las')
     
-    #os.remove(f'{outdir}/class_6.las')
-    #os.remove(f'{outdir}/class_2.las')
-    os.remove(f'{outdir}/class_1.las')    
-    #os.remove(f'{outdir}/class_4.las')
+    #os.remove(f'{outdir}/class_6.laz')
+    os.remove(f'{outdir}/class_2.las')
+    #os.remove(f'{outdir}/class_1.las')    
+    os.remove(f'{outdir}/class_14.las')
 
 
 def dividir_nube_las(input_file, output_dir, threshold, sampling=False):
-    # Abrir el archivo LAS para obtener la cantidad de puntos y el header original
+    
     archivo_las = laspy.read(input_file)
     total_puntos = archivo_las.header.point_count
-    header_original = archivo_las.header  # Guardar el header original
+    header_original = archivo_las.header
     
-    #Crea carpeta de salida
     os.makedirs(output_dir, exist_ok=True)
     print("Se leyó el folder: ", output_dir)
     # Calcular cuántos puntos por parte
     min_divisions_needed = math.ceil(total_puntos / threshold)
     puntos_por_parte = total_puntos // min_divisions_needed
-    if min_divisions_needed > 100:
-        min_divisions_needed = 100
+    if min_divisions_needed > 1000:
+        min_divisions_needed = 500
         sampling = True
     print(f"Total de puntos: {total_puntos}, Puntos por parte: {puntos_por_parte}")
 
@@ -83,8 +78,8 @@ def dividir_nube_las(input_file, output_dir, threshold, sampling=False):
         
         if sampling:
             np.random.seed(1024+i)
-            indices = np.random.choice(total_puntos, size=8192, replace=False)
-            indices.sort()  # Ordenar para acceso secuencial más eficiente
+            indices = np.random.choice(total_puntos, size=16384, replace=False)
+            indices.sort()
             puntos_divididos = puntos[indices]
         else:
             puntos_divididos = puntos[inicio:fin]
@@ -109,13 +104,13 @@ def las_a_txt(input_dir, output_dir, data):
     for file in os.listdir(input_dir):
         filename = os.fsdecode(file)
         if filename.endswith(".las") or filename.endswith(".laz"): 
-            # Procesar cada archivo LAS
+            
             input_path = os.path.join(input_dir, file)
-            # Leer el archivo LAS
+            
             inFile = laspy.read(input_path)
             test = np.vstack((inFile.x, inFile.y, inFile.z, inFile.intensity, inFile.height, inFile.classification)).T
 
-            with open(f"{output_dir}/{data}net_{contador:06d}.txt", mode='w') as f:
+            with open(f"{output_dir}/{data}t_{contador:06d}.txt", mode='w') as f:
                 for i in range(len(test)):
                     f.write("%.6f "%float(test[i][0].item()))
                     f.write("%.6f "%float(test[i][1].item()))
@@ -124,15 +119,15 @@ def las_a_txt(input_dir, output_dir, data):
                     f.write("%.6f "%float(test[i][4].item()))
                     f.write("%.6f \n"%int(test[i][5].item()))
         
-            print(f"Guardado archivo: {output_dir}/{data}net_{contador:06d}.txt")
-            contador += 1  # Incrementar el contador para el siguiente archivo
+            print(f"Guardado archivo: {output_dir}/{data}t_{contador:06d}.txt")
+            contador += 1 
         continue
     
 
 
 #### Class div and remap  ####
 
-# Cargar el archivo .las
+### Cargar el archivo .las
 
 input_file = "normalized_cloud.las" 
 outdir = "preprocessed_clss/"
@@ -144,9 +139,9 @@ div_n_remap(input_file, outdir)
 input_file = "preprocessed_clss/class_0.las"
 
 data = [
-#    1,
-    3, 
-#    "TL",  
+    1,
+    #2,
+    3,
 ]
 
 for num in data:
@@ -173,7 +168,7 @@ for file in os.listdir(partsdir):
         print("Procesing file: ", file)
         class_name = os.path.splitext(file)[0]
         output_dir = os.path.join("./outdir", class_name)
-        threshold = 4096
+        threshold = 16384
         dividir_nube_las(input_file, output_dir, threshold, sampling=False)
         continue
 
@@ -189,22 +184,27 @@ num_partes = 1000
 
 #### Las to txt ####
 names = {
-#    "Ground": 0,
-#    "Vegetation": 1,
-    "TL": 3,
+    "Ground": 1,
+    "Buildings": 3,
+    #"Ground": 3,
 }
 
 data = [
-#    "GD",
-#    "VG", 
+    "VG",
+    #"BD", 
     "TL",  
 ]
 i=0
 for n in names:
-    input_dir = f'outdir/class_{names[n]}'  # Directorio donde están los archivos .las
-    output_dir = f'/home/binahlab/AI-Labs/clever-data/electrical-elements/data/nederland/geotiles-2025_05_08/processed/pointclouds/{n}'  
+    input_dir = f'outdir/class_{names[n]}' 
+    #output_dir = f'Absolute_path_to_your_output_directory/{n}' 
     las_a_txt(input_dir, output_dir, data[i])
     i=i+1
 
-#os.remove('outdir/class_1')
-os.remove('outdir/class_3')
+
+os.remove('preprocessed_clss/class_1.las')
+#os.remove('preprocessed_clss/class_2.las')
+os.remove('preprocessed_clss/class_3.las')
+shutil.rmtree('outdir/class_1')
+#shutil.rmtree('outdir/class_2')
+shutil.rmtree('outdir/class_3')

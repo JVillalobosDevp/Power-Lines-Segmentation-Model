@@ -5,7 +5,7 @@ import json
 
 ##### Make structure as as fucntion to call it from process_las.py
 
-las = laspy.read("nether_int.las")
+las = laspy.read("37AZ1_23.LAZ")
 points = np.vstack((las.x, las.y, las.z)).T
 og_offset = np.vstack((las.header.x_offset, las.header.y_offset, las.header.z_offset)).T
 new_las = laspy.create(point_format=las.header.point_format, file_version=las.header.version)

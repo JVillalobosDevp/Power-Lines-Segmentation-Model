@@ -38,10 +38,13 @@ def no_ground_features_extraction(
     las = laspy.read(no_ground_file)
     no_ground_points = np.vstack((las.x, las.y, las.z)).T
     logger.debug(f"Loaded {no_ground_points.shape[0]} points from file: {no_ground_file}")
+    logger.info(f"Processing heights from file: {no_ground_file}")
 
     ground = laspy.read(input_file)
     ground_points = np.vstack((ground.x, ground.y, ground.z)).T
     logger.debug(f"Loaded {ground_points.shape[0]} points from file: {input_file}")
+
+
 
     no_ground_points = np.asarray(no_ground_points, dtype=np.float64)
     ground_points = np.asarray(ground_points, dtype=np.float64)
@@ -113,9 +116,6 @@ def no_ground_features_extraction(
 
     # Save to new LAS file
     no_ground_las.write(no_ground_file)
-
-
-    logger.debug("📏 Computed relative heights to nearest ground")
 
     elapsed = time.time() - start_time
     logger.info(f"Feature extraction completed in {elapsed:.2f} seconds")
