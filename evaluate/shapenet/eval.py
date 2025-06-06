@@ -1,5 +1,5 @@
 import argparse
-import os
+import os, shutil
 import random
 import sys
 
@@ -163,6 +163,10 @@ def evaluate(configs=None):
     ##############
 
     stats = np.zeros((configs.data.num_shapes, 2))
+    segmented_output_dir = os.path.join(configs.train.save_path, 'segmented_outputs')
+
+    if os.path.exists(segmented_output_dir):
+        shutil.rmtree(segmented_output_dir)
 
     for shape_index, (file_path, shape_id) in enumerate(tqdm(dataset.file_paths, desc='eval', ncols=0)):
         data = np.loadtxt(file_path).astype(np.float32)
@@ -171,12 +175,16 @@ def evaluate(configs=None):
         predictions = np.full(total_num_points_in_shape, -1, dtype=np.int64)
 
         coords = data[:, :3]
+        intensity = data[:, 3]
+        height = data[:, 4]
         if dataset.normalize:
             coords = dataset.normalize_point_cloud(coords)
+            intensity = dataset.normalize_intensity(intensity)
         coords = coords.transpose()
+        normal = np.stack([intensity, height], axis=1)
         ground_truth = data[:, -1].astype(np.int64)
         if dataset.with_normal:
-            normal = data[:, 3:6].transpose()
+            normal = normal.transpose()
             if dataset.with_one_hot_shape_id:
                 shape_one_hot = np.zeros((dataset.num_shapes, coords.shape[-1]), dtype=np.float32)
                 shape_one_hot[shape_id, :] = 1.0
@@ -212,12 +220,26 @@ def evaluate(configs=None):
                                  confidences, predictions, total_num_voted_points)
         update_stats(stats, ground_truth, predictions, shape_id, start_class, end_class)
 
-        segmented_output_dir = os.path.join(configs.train.save_path, 'segmented_outputs')
         os.makedirs(segmented_output_dir, exist_ok=True)
         output_file = os.path.join(segmented_output_dir, f"segmented_output_shape_{shape_index}.txt")
-        output_data = np.hstack((data[:, :3], predictions.reshape(-1, 1), confidences.reshape(-1, 1)))
-        np.savetxt(output_file, output_data, fmt="%.6f %.6f %.6f %.6f %.6f", delimiter=" ")
-        #print(f"Resultados guardados en {output_file}")
+        #output_data = np.hstack((data[:, :3], predictions.reshape(-1, 1), confidences.reshape(-1, 1)))
+        x= data[:, 0]
+        y= data[:, 1]
+        z= data[:, 2]
+        pred = predictions
+        conf = confidences
+        test = np.vstack([x, y, z, pred, conf]).T
+        print(test.shape)
+
+        with open(f"{output_file}", mode='w') as f:
+            for i in range(len(test)):
+                f.write("%.6f "%float(test[i][0].item()))
+                f.write("%.6f "%float(test[i][1].item()))
+                f.write("%.6f "%float(test[i][2].item()))
+                f.write("%.6f "%float(test[i][3].item()))
+                f.write("%.6f \n"%float(test[i][4].item()))
+        #np.savetxt(output_file, output_data, fmt="%.6f %.6f %.6f %.6f %.6f", delimiter=" ")
+        print(f"Resultados guardados en {output_file}")
         
         
     # Ruta de la carpeta que contiene los archivos originales
