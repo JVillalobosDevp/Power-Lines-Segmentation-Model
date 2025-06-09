@@ -55,7 +55,7 @@ class _ShapeNetDataset(Dataset):
             coords = data[:, :3]
             if self.normalize:
                 coords = self.normalize_point_cloud(coords)
-            normal = data[:, 3]
+            normal = data[:, 3:6]
             label = data[:, -1].astype(np.int64)
             if len(self.cache) < self.cache_size:
                 self.cache[index] = (coords, normal, label, shape_id)
@@ -86,25 +86,17 @@ class _ShapeNetDataset(Dataset):
 
     @staticmethod
     def normalize_point_cloud(points):
-        coords = points[:, :3]           
-        intensity = points[:, 3]         
-        
-        # Normalize coordinates
-        centroid = np.mean(coords, axis=0)
-        coords -= centroid                      # Center the cloud
-        coords /= np.max(np.linalg.norm(coords, axis=1))  # Scale to unit sphere
-
-        # Normalize intensity using IQR (robust to outliers)
-        IQR = np.quantile(intensity, 0.75) - np.quantile(intensity, 0.25)
-        if IQR == 0:
-            norm_intensity = intensity - np.median(intensity)
-        else:
-            norm_intensity = (intensity - np.median(intensity)) / IQR
-        norm_intensity -= np.min(norm_intensity)  # Shift to make min = 0
-
-        # Reconstruct normalized point cloud
-        normalized_points = np.concatenate([coords, norm_intensity[:, np.newaxis]], axis=1)
-        return normalized_points
+        coords = points.copy()  # Avoid modifying the original points
+        centroid = np.mean(coords, axis=0)  # Compute the centroid
+        coords = coords - centroid
+        return points / np.max(np.linalg.norm(points, axis=1))
+    # @staticmethod
+    # def normalize_point_cloud(points):         
+    #     # Normalize coordinates
+    #     centroid = np.mean(points, axis=0)
+    #     points -= centroid                      # Center the cloud
+    #     points /= np.max(np.linalg.norm(points, axis=1))  # Scale to unit sphere
+    #     return points
 
     @staticmethod
     def jitter_point_cloud(points, sigma=0.01, clip=0.05):

@@ -165,14 +165,15 @@ def evaluate(configs=None):
     stats = np.zeros((configs.data.num_shapes, 2))
 
     for shape_index, (file_path, shape_id) in enumerate(tqdm(dataset.file_paths, desc='eval', ncols=0)):
-        data = np.loadtxt(file_path).astype(np.float32)
+        data = np.loadtxt(file_path)
         total_num_points_in_shape = data.shape[0]
         confidences = np.zeros(total_num_points_in_shape, dtype=np.float32)
         predictions = np.full(total_num_points_in_shape, -1, dtype=np.int64)
-
+        np.savetxt("test1.txt", data[:, :3], fmt="%.6f %.6f %.6f", delimiter=" ")
         coords = data[:, :3]
         if dataset.normalize:
             coords = dataset.normalize_point_cloud(coords)
+            np.savetxt("test.txt", data[:, :3], fmt="%.6f %.6f %.6f", delimiter=" ")
         coords = coords.transpose()
         ground_truth = data[:, -1].astype(np.int64)
         if dataset.with_normal:
@@ -224,7 +225,7 @@ def evaluate(configs=None):
     carpeta_origen = "./runs/shapenet.pvcnn.c0p5/segmented_outputs"
 
     # Ruta del archivo de salida combinado
-    archivo_salida = "./segmented_file/segmented_file.txt"
+    archivo_salida = "./data/output/segmented_file.txt"
 
     onefile(carpeta_origen, archivo_salida)
 

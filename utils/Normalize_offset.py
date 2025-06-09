@@ -1,11 +1,14 @@
 import laspy
 import numpy as np
-import json
+import json, argparse
 
-
+parser = argparse.ArgumentParser()
+parser.add_argument('--input_file', default=None)
+parser.add_argument('--output_file', default=None)
+args, opts = parser.parse_known_args()
 ##### Make structure as as fucntion to call it from process_las.py
 
-las = laspy.read("37AZ1_23.LAZ")
+las = laspy.read(f"{args.input_file}")
 points = np.vstack((las.x, las.y, las.z)).T
 og_offset = np.vstack((las.header.x_offset, las.header.y_offset, las.header.z_offset)).T
 new_las = laspy.create(point_format=las.header.point_format, file_version=las.header.version)
@@ -33,15 +36,19 @@ else:
 new_las.x = nomalized_points[:, 0]
 new_las.y = nomalized_points[:, 1]
 
-#Copy attributes and normalize it to 8 bits
-""" new_las.red   = (las_test.red / 256).astype(np.uint8)
-new_las.green = (las_test.green / 256).astype(np.uint8)
-new_las.blue  = (las_test.blue / 256).astype(np.uint8) """
+if (las.red).dtype != "uint16":
+    new_las.red   = (las.red / 256).astype(np.uint8)
+    new_las.green = (las.green / 256).astype(np.uint8)
+    new_las.blue  = (las.blue / 256).astype(np.uint8)
+else:
+    new_las.red   = las.red
+    new_las.green = las.green
+    new_las.blue  = las.blue
 
 if 'classification' in las.point_format.dimension_names:
     new_las.classification = las.classification
 
-new_las.write("./normalized_cloud.las")
+new_las.write(f"{args.output_file}")
 
 ### change later in order to recover the original offset in inference tests
 cloud_data = og_offset.tolist() + new_las.header.scale.tolist()

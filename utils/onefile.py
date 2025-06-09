@@ -44,7 +44,7 @@ def onefile(carpeta_origen, archivo_salida):
 
     print(f"Todos los archivos se han procesado y combinado en {archivo_salida}")
 
-carpeta_origen = "./runs/shapenet.pvcnn.c0p5/segmented_outputs"
+carpeta_origen = "data/shapenet/TL"
 
 archivo_salida = "./segmented_file/segmented_file.txt"
 

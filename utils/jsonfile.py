@@ -25,7 +25,7 @@ def generar_datos_y_dividir():
 
     # Generar TL (186 files)
     base = bases["TL"]  # Base correspondiente
-    rutas = generar_rutas(base, "TLf", range(500))
+    rutas = generar_rutas(base, "TL", range(500))
     # Seleccionar 20% (30 datos) y el resto
     #seleccionados = random.sample(rutas, 1)
     #rutas_submuestreadas.extend(seleccionados)
@@ -34,7 +34,7 @@ def generar_datos_y_dividir():
 
     # Generar VG (131 files)
     base = bases["VG"]  # Base correspondiente
-    rutas = generar_rutas(base, "VGf", range(500))
+    rutas = generar_rutas(base, "VG", range(500))
     # Seleccionar 20% (30 datos) y el resto
     #seleccionados = random.sample(rutas, 1)
     #rutas_submuestreadas.extend(seleccionados)
@@ -43,7 +43,7 @@ def generar_datos_y_dividir():
 
     # Generar GND (371 files)
     base = bases["GND"]  # Base correspondiente
-    rutas = generar_rutas(base, "GDf", range(1000))
+    rutas = generar_rutas(base, "GD", range(500))
     # Seleccionar 20% (100 datos) y el resto
     #seleccionados = random.sample(rutas, 1)
     #rutas_submuestreadas.extend(seleccionados)
@@ -75,7 +75,7 @@ def guardar_json(rutas, archivo_salida):
 
 # Ejecutar el script
 if __name__ == "__main__":
-    archivo_original = "/home/binahlab/AI-Labs/clever-data/electrical-elements/data/nederland/geotiles-2025_05_08/processed/pointclouds/train_test_split/shuffled_test_file_list.json"
+    archivo_original = "shuffled_test_file_list.json"
     archivo_submuestreo = "rutas_submuestreadas.json"
 
     #rutas_originales, rutas_submuestreadas = generar_datos_y_dividir()

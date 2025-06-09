@@ -32,10 +32,14 @@ new_las.y = aligned_test_points[:, 1]
 new_las.z = aligned_test_points[:, 2]
 
 #Copy attributes and normalize it to 8 bits
-new_las.red   = (las_test.red / 256).astype(np.uint8)
-new_las.green = (las_test.green / 256).astype(np.uint8)
-new_las.blue  = (las_test.blue / 256).astype(np.uint8)
-
+if (las_test.red).dtype != "uint16":
+    new_las.red   = (las_test.red / 256).astype(np.uint8)
+    new_las.green = (las_test.green / 256).astype(np.uint8)
+    new_las.blue  = (las_test.blue / 256).astype(np.uint8)
+else:
+    new_las.red   = las_test.red
+    new_las.green = las_test.green
+    new_las.blue  = las_test.blue
 if 'classification' in las_test.point_format.dimension_names:
     new_las.classification = las_test.classification
 
