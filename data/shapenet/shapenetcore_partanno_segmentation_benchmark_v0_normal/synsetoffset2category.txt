@@ -1,4 +1,0 @@
-GND	Ground
-VG	Vegetation
-BD	Buildings
-TL TL

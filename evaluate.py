@@ -14,9 +14,9 @@ def prepare():
     parser.add_argument('configs', nargs='*', default=['configs/shapenet/pvcnn/c0p5.py'])
     parser.add_argument('--evaluate', default=False, action='store_true')
     args, opts = parser.parse_known_args()
-    gpu = set_cuda_visible_devices("0")
+    gpu = set_cuda_visible_devices("2")
     if torch.cuda.is_available():
-        gpus = set_cuda_visible_devices("0")
+        gpus = set_cuda_visible_devices("2")
         configs.device = 'cuda'
         configs.device_ids = gpus  # Usa solo la primera GPU si no se configuran más.
     else:

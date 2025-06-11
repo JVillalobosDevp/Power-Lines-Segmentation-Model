@@ -90,13 +90,6 @@ class _ShapeNetDataset(Dataset):
         centroid = np.mean(coords, axis=0)  # Compute the centroid
         coords = coords - centroid
         return points / np.max(np.linalg.norm(points, axis=1))
-    # @staticmethod
-    # def normalize_point_cloud(points):         
-    #     # Normalize coordinates
-    #     centroid = np.mean(points, axis=0)
-    #     points -= centroid                      # Center the cloud
-    #     points /= np.max(np.linalg.norm(points, axis=1))  # Scale to unit sphere
-    #     return points
 
     @staticmethod
     def jitter_point_cloud(points, sigma=0.01, clip=0.05):
