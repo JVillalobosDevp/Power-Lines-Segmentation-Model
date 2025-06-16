@@ -6,17 +6,17 @@ from meters.shapenet import MeterShapeNet
 from evaluate.shapenet.eval import evaluate
 from utils.config import Config, configs
 
-configs.data.num_classes = 5
-configs.data.num_shapes = 4
+configs.data.num_classes = 33
+configs.data.num_shapes = 10
 
 # dataset configs
 configs.dataset = Config(ShapeNet)
 configs.dataset.root = 'data/shapenet'
 configs.dataset.with_normal = True
 configs.dataset.with_one_hot_shape_id = True
-configs.dataset.normalize = True
+configs.dataset.normalize = False
 configs.dataset.jitter = True
-configs.dataset.num_points = 8192
+configs.dataset.num_points = 50000
 
 # evaluate configs
 configs.evaluate = Config()
@@ -27,7 +27,7 @@ configs.evaluate.dataset = Config(split='test')
 # train configs
 configs.train = Config()
 configs.train.num_epochs = 500
-configs.train.batch_size = 8
+configs.train.batch_size = 2
 
 # train: meters
 configs.train.meters = Config()

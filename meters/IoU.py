@@ -21,9 +21,6 @@ def IoU_Metric(
     ground_truth = org.classification
     prediction = pred.classification
     
-    print(f"GT shape: {ground_truth.shape}, Pred shape: {prediction.shape}")
-    print(f"First 10 GT: {ground_truth[:10]}")
-    print(f"First 10 Pred: {prediction[:10]}")
 
     classes = np.unique(np.concatenate((ground_truth, prediction)))
     iou_pc = {}

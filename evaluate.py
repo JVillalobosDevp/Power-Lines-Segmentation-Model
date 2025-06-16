@@ -14,9 +14,9 @@ def prepare():
     parser.add_argument('configs', nargs='*', default=['configs/shapenet/pvcnn/c0p5.py'])
     parser.add_argument('--evaluate', default=False, action='store_true')
     args, opts = parser.parse_known_args()
-    gpu = set_cuda_visible_devices("2")
+    gpu = set_cuda_visible_devices("0")
     if torch.cuda.is_available():
-        gpus = set_cuda_visible_devices("2")
+        gpus = set_cuda_visible_devices("0")
         configs.device = 'cuda'
         configs.device_ids = gpus  # Usa solo la primera GPU si no se configuran más.
     else:
@@ -78,7 +78,7 @@ def prepare():
     return configs
     
 class EarlyStopper:
-    def __init__(self, patience=3, min_delta=1e-4):
+    def __init__(self, patience=20, min_delta=1e-6):
         self.patience = patience
         self.min_delta = min_delta
         self.counter = 0
@@ -97,7 +97,7 @@ class EarlyStopper:
                 return True
         return False
 
-early_stopper = EarlyStopper(patience=5, min_delta=1e-4)
+early_stopper = EarlyStopper(patience=50, min_delta=1e-6)
 
 def main():
     configs = prepare()
