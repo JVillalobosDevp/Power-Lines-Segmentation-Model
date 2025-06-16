@@ -58,7 +58,7 @@ def prepare():
 # Data Join in one txt file
 def onefile(carpeta_origen, archivo_salida):
     #Ensure output folder exist
-    os.makedirs('./segmented_file', exist_ok=True)
+    #os.makedirs('./segmented_file', exist_ok=True)
     # Crear o vaciar el archivo de salida
     with open(archivo_salida, 'w') as f_salida:
        # pass  # Simplemente se abre en modo 'w' para vaciar el contenido si existe
