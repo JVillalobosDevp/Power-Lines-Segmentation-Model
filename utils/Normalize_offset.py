@@ -11,7 +11,7 @@ args, opts = parser.parse_known_args()
 las = laspy.read(f"{args.input_file}")
 points = np.vstack((las.x, las.y, las.z)).T
 og_offset = np.vstack((las.header.x_offset, las.header.y_offset, las.header.z_offset)).T
-new_las = laspy.create(point_format=las.header.point_format, file_version=las.header.version)
+new_las = laspy.create(point_format=8, file_version=1.4)
 new_las.header = las.header
 new_las.header.scale = las.header.scale
 new_las.intensity = las.intensity
@@ -36,7 +36,7 @@ else:
 new_las.x = nomalized_points[:, 0]
 new_las.y = nomalized_points[:, 1]
 
-if (las.red).dtype != "uint16":
+if (las.red).dtype != "uint8":
     new_las.red   = (las.red / 256).astype(np.uint8)
     new_las.green = (las.green / 256).astype(np.uint8)
     new_las.blue  = (las.blue / 256).astype(np.uint8)

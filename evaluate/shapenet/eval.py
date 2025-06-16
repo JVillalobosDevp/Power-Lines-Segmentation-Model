@@ -57,8 +57,7 @@ def prepare():
 
 # Data Join in one txt file
 def onefile(carpeta_origen, archivo_salida):
-    #Ensure output folder exist
-    os.makedirs('./segmented_file', exist_ok=True)
+
     # Crear o vaciar el archivo de salida
     with open(archivo_salida, 'w') as f_salida:
        # pass  # Simplemente se abre en modo 'w' para vaciar el contenido si existe
@@ -169,11 +168,9 @@ def evaluate(configs=None):
         total_num_points_in_shape = data.shape[0]
         confidences = np.zeros(total_num_points_in_shape, dtype=np.float32)
         predictions = np.full(total_num_points_in_shape, -1, dtype=np.int64)
-        np.savetxt("test1.txt", data[:, :3], fmt="%.6f %.6f %.6f", delimiter=" ")
         coords = data[:, :3]
         if dataset.normalize:
             coords = dataset.normalize_point_cloud(coords)
-            np.savetxt("test.txt", data[:, :3], fmt="%.6f %.6f %.6f", delimiter=" ")
         coords = coords.transpose()
         ground_truth = data[:, -1].astype(np.int64)
         if dataset.with_normal:
@@ -232,6 +229,8 @@ def evaluate(configs=None):
     np.save(configs.evaluate.stats_path, stats)
     print('clssIoU: {}'.format('  '.join(map('{:>8.2f}'.format, stats[:, 0] / stats[:, 1] * 100))))
     print('meanIoU: {:4.2f}'.format(stats[:, 0].sum() / stats[:, 1].sum() * 100))
+    print('Stats debug:', stats[:, 0], '/', stats[:, 1])
+    print('clssIoU: {}'.format('  '.join(map('{:>8.2f}'.format, stats[:, 0] / stats[:, 1] * 100))))
 
 
 @numba.jit()

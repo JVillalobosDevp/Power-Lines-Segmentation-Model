@@ -4,15 +4,22 @@ __all__ = ['MeterShapeNet']
 
 
 default_shape_name_to_part_classes = {
-    'Ground': [0],
-    'Vegetation': [1],
-    'Buildings': [2],
-    'TL': [3,4],
+    'Unclassified': [0, 7, 8, 9, 10, 11, 16, 17, 22, 23, 24, 25, 26, 27, 28, 29, 31],
+    'Default': [1],
+    'Terreno': [2],
+    'Vegetacion-Baja': [3],
+    'Edificacionesr': [6],
+    'Overlap': [12],
+    'Incloud':[4, 5, 18, 30],
+    'Carreteras': [13, 14, 15],
+    'Otras Lineas': [19, 20, 21],
+    'Apoyos': [32],
+    #'Linea-AT', 'Vegetacion-Media': [4], 'Vegetacion-Alta': [5], Within Incloud
 }
 
 
 class MeterShapeNet:
-    def __init__(self, num_classes=5, num_shapes=4, shape_name_to_part_classes=None):
+    def __init__(self, num_classes=33, num_shapes=10, shape_name_to_part_classes=None):
         super().__init__()
         self.num_classes = num_classes
         self.num_shapes = num_shapes

@@ -8,8 +8,8 @@ __all__ = ['ShapeNet']
 
 
 class _ShapeNetDataset(Dataset):
-    def __init__(self, root, num_points, split='train', with_normal=True, with_one_hot_shape_id=False,
-                 normalize=True, jitter=True):
+    def __init__(self, root, num_points, split='train', with_normal=True, with_one_hot_shape_id=True,
+                 normalize=False, jitter=True):
         assert split in ['train', 'test']
         self.root = root
         self.num_points = num_points
@@ -40,8 +40,8 @@ class _ShapeNetDataset(Dataset):
                     )
         self.file_paths = file_paths
         print(f"Total archivos leídos para el split '{self.split}': {len(self.file_paths)}")
-        self.num_shapes = 4
-        self.num_classes = 5
+        self.num_shapes = 10
+        self.num_classes = 33
 
         self.cache = {}  # from index to (point_set, cls, seg) tuple
         self.cache_size = 20000
@@ -60,7 +60,10 @@ class _ShapeNetDataset(Dataset):
             if len(self.cache) < self.cache_size:
                 self.cache[index] = (coords, normal, label, shape_id)
 
-        choice = np.random.choice(label.shape[0], self.num_points, replace=True)
+        if label.shape[0] >= self.num_points:
+            choice = np.random.choice(label.shape[0], self.num_points, replace=False)
+        else:
+            choice = np.random.choice(label.shape[0], self.num_points, replace=True)
         coords = coords[choice, :].transpose()
         if self.jitter:
             coords = self.jitter_point_cloud(coords)
