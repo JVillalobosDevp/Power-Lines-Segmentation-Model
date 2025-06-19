@@ -41,14 +41,14 @@ def generar_datos_y_dividir():
     #rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
     rutas_originales.extend(rutas)    
 
-    # Generar GND (371 files)
-    base = bases["GND"]  # Base correspondiente
-    rutas = generar_rutas(base, "GD", range(500))
-    # Seleccionar 20% (100 datos) y el resto
-    #seleccionados = random.sample(rutas, 1)
-    #rutas_submuestreadas.extend(seleccionados)
-    #rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
-    rutas_originales.extend(rutas)
+    # # Generar GND (371 files)
+    # base = bases["GND"]  # Base correspondiente
+    # rutas = generar_rutas(base, "GD", range(500))
+    # # Seleccionar 20% (100 datos) y el resto
+    # #seleccionados = random.sample(rutas, 1)
+    # #rutas_submuestreadas.extend(seleccionados)
+    # #rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
+    # rutas_originales.extend(rutas)
 
     # Generar BD (295 files)
  #    base = bases["BD"]  # Base correspondiente

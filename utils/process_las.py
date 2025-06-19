@@ -22,8 +22,8 @@ def div_n_remap(input_file, outdir):
     #Classes of interest in pointcloud:
     classes = {
         "Ground": 2,
-        "Vegetation": 6, 
-        "Wire+Tower": 14,   
+        "Vegetation": 4, 
+        "Wire+Tower": 18,   
     }
 
     for cls in classes:
@@ -39,8 +39,8 @@ def div_n_remap(input_file, outdir):
     #Remap classes in model values
     format = {
         "2": 0,  
-        "6": 1,   
-        "14": 3, 
+        "4": 1,   
+        "18": 3, 
     }
 
     for num in format:
@@ -50,9 +50,9 @@ def div_n_remap(input_file, outdir):
 
     logger.info("Classes remaped")    
     
-    os.remove(f'{outdir}/class_6.las')
     os.remove(f'{outdir}/class_2.las')
-    os.remove(f'{outdir}/class_14.las')    
+    os.remove(f'{outdir}/class_4.las')
+    os.remove(f'{outdir}/class_18.las')    
     #os.remove(f'{outdir}/class_0.las')
    
 
@@ -151,13 +151,13 @@ for file in os.listdir(partsdir):
 
 #### Las to txt ####
 names = {
-    "Ground": 0,
+    #"Ground": 0,
     "Vegetation": 1,
     "TL": 3,
 }
 
 data = [
-    "GD",
+    #"GD",
     "VG", 
     "TL",  
 ]

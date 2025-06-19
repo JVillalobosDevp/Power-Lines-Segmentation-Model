@@ -88,7 +88,7 @@ def txt_a_las(input_txt, output_las):
         1,
         2,
         3,
-        3
+        4
     ]
     
     default_value = 0
@@ -102,8 +102,8 @@ def txt_a_las(input_txt, output_las):
 
 
 # Ejemplo de uso:
-input_txt = "./segmented_file/segmented_file.txt"  # Ruta al archivo .txt
-output_las = "./segmented_file/segmented_file.las"  # Ruta de salida para el archivo .LAS
+input_txt = "data/output/segmented_file.txt"  # Ruta al archivo .txt
+output_las = "data/output/segmented_file.las"  # Ruta de salida para el archivo .LAS
 
 txt_a_las(input_txt, output_las)
 

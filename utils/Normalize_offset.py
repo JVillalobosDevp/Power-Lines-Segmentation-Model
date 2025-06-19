@@ -36,7 +36,7 @@ else:
 new_las.x = nomalized_points[:, 0]
 new_las.y = nomalized_points[:, 1]
 
-if (las.red).dtype != "uint16":
+if (las.red).dtype != "uint8":
     new_las.red   = (las.red / 256).astype(np.uint8)
     new_las.green = (las.green / 256).astype(np.uint8)
     new_las.blue  = (las.blue / 256).astype(np.uint8)
