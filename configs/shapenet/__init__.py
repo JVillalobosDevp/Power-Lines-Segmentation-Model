@@ -11,7 +11,7 @@ configs.data.num_shapes = 4
 
 # dataset configs
 configs.dataset = Config(ShapeNet)
-configs.dataset.root = '/home/binahlab/AI-Labs/clever-data/electrical-elements/data/nederland/geotiles-2025_05_08/processed/pointclouds/'
+configs.dataset.root = 'data/shapenet'
 configs.dataset.with_normal = True
 configs.dataset.with_one_hot_shape_id = True
 configs.dataset.normalize = True
