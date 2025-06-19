@@ -10,31 +10,28 @@ args, opts = parser.parse_known_args()
 
 las = laspy.read(f"{args.input_file}")
 points = np.vstack((las.x, las.y, las.z)).T
-og_offset = np.vstack((las.header.x_offset, las.header.y_offset, las.header.z_offset)).T
-new_las = laspy.create(point_format=8, file_version=1.4)
+og_offset = np.array([las.header.x_offset, las.header.y_offset, las.header.z_offset])
+new_las = laspy.create(point_format=las.header.point_format, file_version=las.header.version)
 new_las.header = las.header
 new_las.header.scale = las.header.scale
-new_las.intensity = las.intensity
 
 nomalized_points = points - og_offset
 
 # Estimate new offset and scale
 x_min, y_min, z_min = nomalized_points.min(axis=0)
-
-offset = np.array([x_min, y_min, z_min])  # You can also use mean
+offset = np.array([x_min, y_min, z_min])
 if las.header.z_offset == 0:
     new_las.header.x_offset = offset[0]
     new_las.header.y_offset = offset[1]
     new_las.header.z_offset = las.header.z_offset
-    new_las.z = las.z
 else:
     new_las.header.x_offset = offset[0]
     new_las.header.y_offset = offset[1]
-    new_las.header.y_offset = offset[2]
-    new_las.z = nomalized_points[:, 2]
+    new_las.header.z_offset = nomalized_points[:, 2]
 
-new_las.x = nomalized_points[:, 0]
-new_las.y = nomalized_points[:, 1]
+new_las.x = nomalized_points[:, 0] - x_min
+new_las.y = nomalized_points[:, 1] - y_min
+new_las.z = nomalized_points[:, 2] - z_min
 
 if (las.red).dtype != "uint8":
     new_las.red   = (las.red / 256).astype(np.uint8)
@@ -50,7 +47,11 @@ if 'classification' in las.point_format.dimension_names:
 
 new_las.write(f"{args.output_file}")
 
-### change later in order to recover the original offset in inference tests
-cloud_data = og_offset.tolist() + new_las.header.scale.tolist()
+cloud_data = {
+    "offset": og_offset.tolist(),
+    "scale": new_las.header.scale.tolist(),
+    "min": [x_min, y_min, z_min],
+}
+
 with open("offset_diff.json", "w") as f:
     json.dump(cloud_data, f, indent=2)
