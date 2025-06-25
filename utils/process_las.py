@@ -22,7 +22,7 @@ def div_n_remap(input_file, outdir):
     #Classes of interest in pointcloud:
     classes = {
         "Ground": 2,
-        "Vegetation": 4, 
+        "Vegetation": 6, 
         "Wire+Tower": 18,   
     }
 
@@ -50,10 +50,11 @@ def div_n_remap(input_file, outdir):
 
     logger.info("Classes remaped")    
     
-    os.remove(f'{outdir}/class_2.las')
-    os.remove(f'{outdir}/class_4.las')
-    os.remove(f'{outdir}/class_18.las')    
-    #os.remove(f'{outdir}/class_0.las')
+    for cls in classes:
+        os.remove(f'{outdir}/class_{classes[cls]}.las')
+        os.remove(f'{outdir}/class_{classes[cls]}.las')
+        os.remove(f'{outdir}/class_{classes[cls]}.las')    
+        #os.remove(f'{outdir}/class_0.las')
    
 
 def dividir_nube_las(input_file, output_dir, num_partes):

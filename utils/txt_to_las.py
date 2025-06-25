@@ -41,7 +41,7 @@ def onefile(carpeta_origen, archivo_salida):
 
 carpeta_origen = "../runs/shapenet.pvcnn.c0p5/segmented_outputs"
 
-    # Ruta del archivo de salida combinado
+# Ruta del archivo de salida combinado
 archivo_salida = "../segmented_file/segmented_file.txt"
 
 #onefile(carpeta_origen, archivo_salida)
