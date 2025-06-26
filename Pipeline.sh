@@ -8,7 +8,7 @@ MAIN_SCRIPT="${BASE_DIR}/evaluate.py"
 
 # Data paths
 LOCAL_DATA_DIR="${BASE_DIR}/data"
-# LOCAL_DATA_DIR="${BASE_DIR}/data/*.las"
+#LOCAL_DATA_DIR="${BASE_DIR}/data/*.las"
 LOCAL_OUTPUT_DIR="${BASE_DIR}/data/output"
 
 # Preprocessing scripts (run in order)
@@ -40,9 +40,6 @@ else
 fi
 
 
-
-
-
 # Run python script with error handling
 run_python_script() {
     local script_path="$1"
@@ -63,21 +60,15 @@ run_python_script() {
 main() {
     log_message "Running wire inference pipeline..."
     log_message "Base directory: $BASE_DIR"
-    
-    
+
     # Run preprocessing scripts in sequence
     log_message "=== STARTING PREPROCESSING PHASE ==="
-    
-    for file in "$LOCAL_DATA_DIR"/*.{las,laz}; do
-        [ -e "$file" ] || continue
-        run_python_script "${SCRIPT_1}" "--input_file $file --output_file ${BASE_DIR}/data/normalized_cloud.las"
 
-        # Data normalization
-        run_python_script "${SCRIPT_1}" "--input_file $LOCAL_DATA_DIR/*.las --output_file ${BASE_DIR}/data/normalized_cloud.las"
+    # Data normalization
+    run_python_script "${SCRIPT_1}" "--input_file $LOCAL_DATA_DIR/*.LAZ --output_file ${BASE_DIR}/data/normalized_cloud.las"
         
-        # Process LAS files
-        run_python_script "${SCRIPT_2}" "--input_file ${BASE_DIR}/data/normalized_cloud.las --output_dir ${BASE_DIR}/data/preprocessed_clss" 
-    done
+    # Process LAS files
+    run_python_script "${SCRIPT_2}" "--input_file ${BASE_DIR}/data/normalized_cloud.las --output_dir ${BASE_DIR}/data/preprocessed_clss" 
 
     log_message "=== PREPROCESSING COMPLETED ==="
     

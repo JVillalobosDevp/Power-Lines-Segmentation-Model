@@ -1,8 +1,8 @@
 import laspy
 import numpy as np
 
-inputFile = "aligned_test_cloud.las"
-outFolder = "preprocessed_clss"
+inputFile = "data/normalized.las"
+outFolder = "data/preprocessed_clss" 
 inFile = laspy.read(inputFile)
 test = np.vstack((inFile.x, inFile.y, inFile.z, inFile.red, inFile.blue, inFile.green, inFile.classification)).T
 

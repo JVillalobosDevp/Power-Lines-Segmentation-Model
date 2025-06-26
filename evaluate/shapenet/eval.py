@@ -169,11 +169,11 @@ def evaluate(configs=None):
         total_num_points_in_shape = data.shape[0]
         confidences = np.zeros(total_num_points_in_shape, dtype=np.float32)
         predictions = np.full(total_num_points_in_shape, -1, dtype=np.int64)
-        np.savetxt("test1.txt", data[:, :3], fmt="%.6f %.6f %.6f", delimiter=" ")
+        #np.savetxt("test1.txt", data[:, :3], fmt="%.6f %.6f %.6f", delimiter=" ")
         coords = data[:, :3]
         if dataset.normalize:
             coords = dataset.normalize_point_cloud(coords)
-            np.savetxt("test.txt", data[:, :3], fmt="%.6f %.6f %.6f", delimiter=" ")
+            #np.savetxt("test.txt", data[:, :3], fmt="%.6f %.6f %.6f", delimiter=" ")
         coords = coords.transpose()
         ground_truth = data[:, -1].astype(np.int64)
         if dataset.with_normal:
