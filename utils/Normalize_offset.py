@@ -33,7 +33,7 @@ new_las.x = nomalized_points[:, 0] - x_min
 new_las.y = nomalized_points[:, 1] - y_min
 new_las.z = nomalized_points[:, 2] - z_min
 
-if (las.red).dtype != "uint8":
+if (las.red).max(axis=0) > 255:
     new_las.red   = (las.red / 256).astype(np.uint8)
     new_las.green = (las.green / 256).astype(np.uint8)
     new_las.blue  = (las.blue / 256).astype(np.uint8)
@@ -41,6 +41,7 @@ else:
     new_las.red   = las.red
     new_las.green = las.green
     new_las.blue  = las.blue
+
 
 if 'classification' in las.point_format.dimension_names:
     new_las.classification = las.classification
