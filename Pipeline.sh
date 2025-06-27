@@ -77,7 +77,7 @@ main() {
     run_python_script "$MAIN_SCRIPT" "--evaluate"
     log_message "=== INFERENCE COMPLETED ==="
 
-    run_python_script "${SCRIPT_3}" "--input_file ${BASE_DIR}/data/output/segmented_file.txt --output_dir ${BASE_DIR}/data/output/segmented_file.las"
+    run_python_script "${SCRIPT_3}" "--input_file ${BASE_DIR}/data/output/segmented_file.txt --output_las ${BASE_DIR}/data/output/segmented_file.las"
 
     
     # Cleanup temporary files (optional)

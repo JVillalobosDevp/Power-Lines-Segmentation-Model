@@ -51,7 +51,7 @@ def txt_a_las(input_txt, output_las):
     puntos = np.loadtxt(input_txt, delimiter=' ')  # Cambia el delimitador si es necesario
 
     #Ignore Class # 2
-    puntos = puntos[puntos[:, 6] != 2]
+    #puntos = puntos[puntos[:, 6] != 2]
     
     # Crear un header para el archivo .LAS
     header = laspy.LasHeader(point_format=8, version="1.4")
@@ -102,8 +102,8 @@ def txt_a_las(input_txt, output_las):
 
 
 # Ejemplo de uso:
-input_txt = "data/output/segmented_file.txt"  # Ruta al archivo .txt
-output_las = "data/output/segmented_file.las"  # Ruta de salida para el archivo .LAS
+input_txt = "./data/output/segmented_file.txt"  # Ruta al archivo .txt
+output_las = "./data/output/segmented_file.las"  # Ruta de salida para el archivo .LAS
 
 txt_a_las(input_txt, output_las)
 

@@ -150,7 +150,7 @@ def evaluate(configs=None):
 
     if os.path.exists(configs.evaluate.best_checkpoint_path):
         print(f'==> loading checkpoint "{configs.evaluate.best_checkpoint_path}"')
-        checkpoint = torch.load(configs.evaluate.best_checkpoint_path)
+        checkpoint = torch.load(configs.evaluate.best_checkpoint_path, weights_only = False)
         model.load_state_dict(checkpoint.pop('model'))
         del checkpoint
     else:

@@ -210,7 +210,7 @@ def main():
     last_epoch, best_metrics = -1, {m: None for m in configs.train.metrics}
     if os.path.exists(configs.train.checkpoint_path):
         print(f'==> loading checkpoint "{configs.train.checkpoint_path}"')
-        checkpoint = torch.load(configs.train.checkpoint_path)
+        checkpoint = torch.load(configs.train.checkpoint_path, weights_only = False)
         print(' => loading model')
         model.load_state_dict(checkpoint.pop('model'))
         if 'optimizer' in checkpoint and checkpoint['optimizer'] is not None:

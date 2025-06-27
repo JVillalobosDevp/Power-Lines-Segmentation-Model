@@ -25,7 +25,7 @@ def generar_datos_y_dividir():
 
     # Generar TL (186 files)
     base = bases["TL"]  # Base correspondiente
-    rutas = generar_rutas(base, "TL", range(500))
+    rutas = generar_rutas(base, "TL", range(1000))
     # Seleccionar 20% (30 datos) y el resto
     #seleccionados = random.sample(rutas, 1)
     #rutas_submuestreadas.extend(seleccionados)
@@ -33,13 +33,13 @@ def generar_datos_y_dividir():
     rutas_originales.extend(rutas)
 
     # Generar VG (131 files)
-    base = bases["VG"]  # Base correspondiente
-    rutas = generar_rutas(base, "VG", range(500))
+    #base = bases["VG"]  # Base correspondiente
+    #rutas = generar_rutas(base, "VG", range(500))
     # Seleccionar 20% (30 datos) y el resto
     #seleccionados = random.sample(rutas, 1)
     #rutas_submuestreadas.extend(seleccionados)
     #rutas_originales.extend([ruta for ruta in rutas if ruta not in seleccionados])
-    rutas_originales.extend(rutas)    
+    #rutas_originales.extend(rutas)    
 
     # # Generar GND (371 files)
     # base = bases["GND"]  # Base correspondiente
